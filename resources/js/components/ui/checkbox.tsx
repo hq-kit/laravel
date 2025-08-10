@@ -1,5 +1,3 @@
-import { cn } from "@/lib/utils"
-
 import { IconCheck, IconMinus } from "@tabler/icons-react"
 import type { ReactNode, Ref } from "react"
 import type {
@@ -7,10 +5,11 @@ import type {
   CheckboxProps as RACCheckboxProps,
 } from "react-aria-components"
 import {
+  composeRenderProps,
   Checkbox as RACCheckbox,
   CheckboxGroup as RACCheckboxGroup,
-  composeRenderProps,
 } from "react-aria-components"
+import { cn } from "@/lib/utils"
 import { Description, FieldError, type FieldProps, Label } from "./form"
 
 interface CheckboxGroupProps extends RACCheckboxGroupProps, FieldProps {}

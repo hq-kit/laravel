@@ -1,6 +1,6 @@
 import { Head } from "@inertiajs/react"
 import { Container, Header, Skeleton } from "@/components/ui"
-import AppLayout from "@/layouts/app-layout"
+import NavbarLayout from "@/layouts/app/navbar-layout"
 
 export default function Home() {
   return (
@@ -29,4 +29,4 @@ export default function Home() {
   )
 }
 
-Home.layout = (page: any) => <AppLayout layout="navbar" children={page} />
+Home.layout = (page: any) => <NavbarLayout children={page} />

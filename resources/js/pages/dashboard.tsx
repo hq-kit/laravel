@@ -1,6 +1,6 @@
 import { Head } from "@inertiajs/react"
 import { Skeleton } from "@/components/ui"
-import AppLayout from "@/layouts/app-layout"
+import SidebarLayout from "@/layouts/app/sidebar-layout"
 
 export default function Dashboard() {
   return (
@@ -27,4 +27,4 @@ export default function Dashboard() {
   )
 }
 
-Dashboard.layout = (page: any) => <AppLayout layout="sidebar" children={page} />
+Dashboard.layout = (page: any) => <SidebarLayout children={page} />

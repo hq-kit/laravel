@@ -1,6 +1,5 @@
 import { Head } from "@inertiajs/react"
-
-import AppLayout from "@/layouts/app-layout"
+import SidebarLayout from "@/layouts/app/sidebar-layout"
 import DeleteAccount from "./delete-account"
 import Password from "./password"
 import Profile from "./profile"
@@ -35,5 +34,5 @@ const breadcrumbs = [
 ]
 
 Settings.layout = (page: React.ReactNode) => (
-  <AppLayout breadcrumbs={breadcrumbs} children={page} layout="sidebar" />
+  <SidebarLayout breadcrumbs={breadcrumbs} children={page} />
 )

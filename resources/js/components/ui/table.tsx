@@ -1,5 +1,5 @@
 import { IconChevronDown, IconMenu } from "@tabler/icons-react"
-import { createContext, type ReactNode, type Ref, useContext } from "react"
+import { createContext, type ReactNode, type Ref, use } from "react"
 import type {
   CellProps,
   ColumnProps,
@@ -35,25 +35,25 @@ const TableContext = createContext<TableProps>({
   allowResize: false,
 })
 
-const useTableContext = () => useContext(TableContext)
+const useTableContext = () => use(TableContext)
+
+const Root = (props: TableProps) => (
+  <RACTable
+    className="w-full min-w-full caption-bottom border-spacing-0 text-sm outline-hidden"
+    {...props}
+  />
+)
 
 const Table = ({ className, ...props }: TableProps) => {
-  const renderTable = (
-    <RACTable
-      className={cn(
-        "w-full min-w-full caption-bottom border-spacing-0 text-sm outline-hidden",
-        className,
-      )}
-      {...props}
-    />
-  )
   return (
     <TableContext.Provider value={props}>
       <div slot="table" className="relative w-full overflow-auto rounded-lg border">
         {props.allowResize ? (
-          <ResizableTableContainer className="overflow-auto">{renderTable}</ResizableTableContainer>
+          <ResizableTableContainer className="overflow-auto">
+            <Root {...props} />
+          </ResizableTableContainer>
         ) : (
-          renderTable
+          <Root {...props} />
         )}
       </div>
     </TableContext.Provider>

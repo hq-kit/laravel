@@ -1,6 +1,6 @@
 import { IconMoon, IconSun } from "@tabler/icons-react"
-import { useTheme } from "@/components/providers"
 import { Button } from "@/components/ui"
+import { useTheme } from "@/lib/use-theme"
 
 export function ThemeToggle({ variant = "outline" }: { variant?: "outline" | "ghost" }) {
   const { theme, updateTheme } = useTheme()
