@@ -5,12 +5,14 @@ on:
     branches:
       - develop
       - main
-      - laravel-12.x
+      - master
+      - workos
   pull_request:
     branches:
       - develop
       - main
-      - laravel-12.x
+      - master
+      - workos
 
 permissions:
   contents: write
@@ -19,12 +21,12 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -37,10 +39,16 @@ jobs:
           bun install
 
       - name: Run Pint
-        run: vendor/bin/pint
+        run: composer lint
 
       - name: Format Frontend
         run: bun run format
 
       - name: Lint Frontend
         run: bun run lint
+
+      # - name: Commit Changes
+      #   uses: stefanzweifel/git-auto-commit-action@v7
+      #   with:
+      #     commit_message: fix code style
+      #     commit_options: '--no-verify'
