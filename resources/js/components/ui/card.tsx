@@ -1,85 +1,68 @@
-import { cn } from "@/lib/utils"
-import type { ComponentPropsWithRef } from "react"
+import type { ComponentProps } from 'react'
+import { cn } from '@/lib/utils'
 
-const Card = ({ className, ...props }: ComponentPropsWithRef<"div">) => {
-  return (
+const Card = ({ className, ...props }: ComponentProps<'div'>) => (
     <div
-      data-slot="card"
-      className={cn(
-        "flex flex-col rounded-lg border bg-card text-card-foreground shadow-sm has-[table]:overflow-hidden not-has-[[slot=footer]]:**:[[slot=content]]:pb-6 **:[[slot=table]]:rounded-b-none **:[[slot=table]]:border-x-0",
-        className,
-      )}
-      {...props}
+        className={cn(
+            'group/card flex flex-col gap-(--gutter) rounded-lg border bg-card py-(--gutter) text-card-foreground shadow-xs [--gutter:--spacing(6)] has-[table]:overflow-hidden has-[table]:not-has-data-[slot=card-footer]:pb-0 **:data-[slot=table-header]:bg-muted/50 **:[table]:overflow-hidden',
+            className,
+        )}
+        data-slot='card'
+        {...props}
     />
-  )
-}
-
-interface HeaderProps extends ComponentPropsWithRef<"div"> {
-  title?: string
-  description?: string
-}
-
-const CardHeader = ({ className, title, description, children, ...props }: HeaderProps) => (
-  <div
-    slot="header"
-    className={cn(
-      "grid items-start gap-1.5 p-6 md:auto-rows-min md:grid-rows-[auto_auto] md:has-[[slot=action]]:grid-cols-[1fr_auto]",
-      className,
-    )}
-    {...props}
-  >
-    {title && <CardTitle>{title}</CardTitle>}
-    {description && <CardDescription>{description}</CardDescription>}
-    {!title && typeof children === "string" ? <CardTitle>{children}</CardTitle> : children}
-  </div>
 )
 
-const CardTitle = ({ className, ...props }: ComponentPropsWithRef<"div">) => {
-  return (
+const CardHeader = ({ className, ...props }: ComponentProps<'div'>) => (
     <div
-      slot="title"
-      className={cn("font-semibold text-lg leading-none tracking-tight", className)}
-      {...props}
+        className={cn(
+            '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
+            className,
+        )}
+        data-slot='card-header'
+        {...props}
     />
-  )
-}
-
-const CardDescription = ({ className, ...props }: ComponentPropsWithRef<"div">) => {
-  return (
+)
+const CardTitle = ({ className, ...props }: ComponentProps<'div'>) => (
     <div
-      slot="description"
-      className={cn("text-muted-foreground text-sm md:row-start-2", className)}
-      {...props}
+        className={cn('font-semibold leading-none', className)}
+        data-slot='card-title'
+        {...props}
     />
-  )
-}
+)
 
-const CardAction = ({ className, ...props }: ComponentPropsWithRef<"div">) => {
-  return (
+const CardDescription = ({ className, ...props }: ComponentProps<'div'>) => (
     <div
-      slot="action"
-      className={cn(
-        "flex items-center gap-2 self-start justify-self-end md:col-start-2 md:row-span-2 md:row-start-1",
-        className,
-      )}
-      {...props}
+        className={cn('text-muted-foreground text-sm', className)}
+        data-slot='card-description'
+        {...props}
     />
-  )
-}
+)
 
-const CardContent = ({ className, ...props }: ComponentPropsWithRef<"div">) => {
-  return <div slot="content" className={cn("px-6 has-[table]:p-0", className)} {...props} />
-}
+const CardAction = ({ className, ...props }: ComponentProps<'div'>) => (
+    <div
+        className={cn('col-start-2 row-span-2 row-start-1 self-start justify-self-end', className)}
+        data-slot='card-action'
+        {...props}
+    />
+)
 
-const CardFooter = ({ className, ...props }: ComponentPropsWithRef<"div">) => {
-  return <div slot="footer" className={cn("flex items-center p-6", className)} {...props} />
-}
+const CardContent = ({ className, ...props }: ComponentProps<'div'>) => (
+    <div className={cn('px-6', className)} data-slot='card-content' {...props} />
+)
 
-Card.Content = CardContent
-Card.Description = CardDescription
-Card.Footer = CardFooter
+const CardFooter = ({ className, ...props }: ComponentProps<'div'>) => (
+    <div
+        className={cn('flex items-center px-6 [.border-t]:pt-6', className)}
+        data-slot='card-footer'
+        {...props}
+    />
+)
+
 Card.Header = CardHeader
+Card.Footer = CardFooter
 Card.Title = CardTitle
+Card.Description = CardDescription
 Card.Action = CardAction
+Card.Content = CardContent
 
-export { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
+export { Card, CardHeader, CardFooter, CardTitle, CardAction, CardDescription, CardContent }

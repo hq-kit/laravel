@@ -1,51 +1,47 @@
-import { Head, useForm } from "@inertiajs/react"
-import type { FormEventHandler } from "react"
-
-import { Form, Link, Note } from "@/components/ui"
-import { Button } from "@/components/ui/button"
-import AuthLayout from "@/layouts/auth-layout"
+// Components
+import { Form, Head } from '@inertiajs/react'
+import TextLink from '@/components/text-link'
+import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
+import AuthLayout from '@/layouts/auth-layout'
+import { logout } from '@/wayfinder/routes'
+import verification from '@/wayfinder/routes/verification'
 
 export default function VerifyEmail({ status }: { status?: string }) {
-  const { post, processing } = useForm({})
+    return (
+        <>
+            <Head title='Email verification' />
 
-  const submit: FormEventHandler = (e) => {
-    e.preventDefault()
+            {status === 'verification-link-sent' && (
+                <div className='mb-4 text-center font-medium text-green-600 text-sm'>
+                    A new verification link has been sent to the email address you provided during
+                    registration.
+                </div>
+            )}
 
-    post(route("verification.send"))
-  }
+            <Form {...verification.send.form()} className='space-y-6 text-center'>
+                {({ processing }) => (
+                    <>
+                        <Button isPending={processing} type='submit' variant='secondary'>
+                            {processing && <Spinner />}
+                            Resend verification email
+                        </Button>
 
-  return (
-    <>
-      <Head title="Email verification" />
-
-      {status === "verification-link-sent" && (
-        <Note>
-          A new verification link has been sent to the email address you provided during
-          registration.
-        </Note>
-      )}
-
-      <Form onSubmit={submit} className="space-y-6 text-center">
-        <Button isDisabled={processing} isPending={processing} variant="secondary">
-          Resend verification email
-        </Button>
-
-        <Link
-          href={route("logout")}
-          routerOptions={{ method: "post" }}
-          className="mx-auto block text-sm"
-        >
-          Log out
-        </Link>
-      </Form>
-    </>
-  )
+                        <TextLink href={logout()} className='mx-auto block text-sm'>
+                            Log out
+                        </TextLink>
+                    </>
+                )}
+            </Form>
+        </>
+    )
 }
 
 VerifyEmail.layout = (page: React.ReactNode) => (
-  <AuthLayout
-    title="Verify email"
-    description="Please verify your email address by clicking on the link we just emailed to you."
-    children={page}
-  />
+    <AuthLayout
+        title='Verify email'
+        description='Please verify your email address by clicking on the link we just emailed to you.'
+    >
+        {page}
+    </AuthLayout>
 )

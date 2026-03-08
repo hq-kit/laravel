@@ -1,17 +1,34 @@
-import { type ClassValue, clsx } from 'clsx'
+import type { InertiaLinkProps } from '@inertiajs/react'
+import type { ClassValue } from 'clsx'
+import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
-export const fuzzyMatch = (textValue: string, inputValue: string): boolean => {
-    if (inputValue.length === 0) return true
-    if (textValue.length === 0) return false
-    let textIndex = 0
-    let inputIndex = 0
-    while (textIndex < textValue.length && inputIndex < inputValue.length) {
-        if (textValue.toLowerCase()[textIndex] === inputValue.toLowerCase()[inputIndex]) {
-            inputIndex++
-        }
-        textIndex++
-    }
-    return inputIndex === inputValue.length
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs))
 }
+
+export function toUrl(url: NonNullable<InertiaLinkProps['href']>): string {
+    return typeof url === 'string' ? url : url.url
+}
+
+export function initials(fullName: string): string {
+    const names = fullName.trim().split(' ')
+
+    if (names.length === 0) return ''
+    if (names.length === 1) return names[0].charAt(0).toUpperCase()
+
+    const firstInitial = names[0].charAt(0)
+    const lastInitial = names[names.length - 1].charAt(0)
+
+    return `${firstInitial}${lastInitial}`.toUpperCase()
+}
+
+export const titleCase = (str: string): string =>
+    str
+        .toLowerCase()
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+
+export const strLimit = (str: string, length: number = 30): string =>
+    `${str.length > length ? `${str.slice(0, length)}...` : str}`

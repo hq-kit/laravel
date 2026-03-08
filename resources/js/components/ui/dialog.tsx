@@ -1,168 +1,174 @@
-import { cn } from "@/lib/utils"
-import { IconX } from "@tabler/icons-react"
-import type { ComponentPropsWithRef } from "react"
+import { IconX } from '@tabler/icons-react'
+import type { ComponentProps, ComponentPropsWithRef } from 'react'
 import {
-  Button,
-  type ButtonProps,
-  Heading,
-  type ModalOverlayProps,
-  Dialog as RACDialog,
-  type DialogProps as RACDialogProps,
-  type HeadingProps as RACHeadingProps,
-  ModalOverlay as RACModalOverlay,
-  type TextProps,
-  composeRenderProps,
-} from "react-aria-components"
-import { tv } from "tailwind-variants"
+    Button,
+    type ButtonProps,
+    composeRenderProps,
+    type DialogProps,
+    type DialogTriggerProps,
+    Heading,
+    type ModalOverlayProps,
+    Dialog as RACDialog,
+    DialogTrigger as RACDialogTrigger,
+    type HeadingProps as RACHeadingProps,
+    Modal as RACModal,
+    ModalOverlay as RACModalOverlay,
+    Text,
+    type TextProps,
+} from 'react-aria-components'
+import { cn } from '@/lib/utils'
 
-const overlayStyle = tv({
-  base: [
-    "fixed inset-0 isolate z-50 bg-black/50 duration-200 [--visual-viewport-vertical-padding:32px]",
-    "entering:fade-in entering:animate-in entering:ease-out",
-    "exiting:fade-out exiting:animate-out exiting:ease-in",
-  ],
-})
-
-const sheetStyle = tv({
-  base: [
-    "fixed z-50 bg-background shadow-lg transition",
-    "entering:animate-in entering:duration-300 entering:ease-out",
-    "exiting:animate-out exiting:duration-200 exiting:ease-in",
-  ],
-  variants: {
-    side: {
-      top: "entering:slide-in-from-top exiting:slide-out-to-top inset-x-0 top-0 rounded-b-lg border-b",
-      bottom:
-        "entering:slide-in-from-bottom exiting:slide-out-to-bottom inset-x-0 bottom-0 rounded-t-lg border-t",
-      left: "entering:slide-in-from-left exiting:slide-out-to-left inset-y-0 left-0 h-full w-3/4 rounded-r-lg border-r sm:max-w-sm",
-      right:
-        "entering:slide-in-from-right exiting:slide-out-to-right inset-y-0 right-0 h-full w-3/4 rounded-l-lg border-l sm:max-w-sm",
-    },
-  },
-})
-
-const modalStyle = tv({
-  base: [
-    "sm:-translate-x-1/2 sm:-translate-y-1/2 absolute bottom-0 z-50 h-fit w-full rounded-t-lg bg-background shadow-lg transition duration-200 sm:fixed sm:top-1/2 sm:left-[50vw] sm:rounded-lg sm:border",
-    "entering:fade-in entering:zoom-in-95 entering:slide-in-from-bottom sm:entering:slide-in-from-bottom-0 entering:animate-in entering:ease-out",
-    "exiting:fade-out exiting:zoom-out-95 exiting:slide-out-to-bottom sm:exiting:slide-out-to-bottom-0 exiting:animate-out exiting:ease-in",
-    "ring-1 ring-border",
-  ],
-  variants: {
-    size: {
-      xs: "sm:max-w-xs",
-      sm: "sm:max-w-sm",
-      md: "sm:max-w-md",
-      lg: "sm:max-w-lg",
-      xl: "sm:max-w-xl",
-      "2xl": "sm:max-w-2xl",
-      "3xl": "sm:max-w-3xl",
-      "4xl": "sm:max-w-4xl",
-      "5xl": "sm:max-w-5xl",
-      full: "max-w-full",
-    },
-  },
-})
-
-const popoverStyle = tv({
-  base: [
-    "group max-w-xs rounded-lg border bg-popover bg-clip-padding text-popover-foreground shadow-sm transition-transform sm:max-w-3xl sm:text-sm",
-    "entering:fade-in entering:zoom-in-95 entering:animate-in entering:duration-150",
-    "exiting:fade-out exiting:zoom-out-95 exiting:animate-out exiting:duration-100",
-    "entering:placement-left:slide-in-from-right-2 entering:placement-right:slide-in-from-left-2 entering:placement-top:slide-in-from-bottom-2 entering:placement-bottom:slide-in-from-top-2",
-    "exiting:placement-left:slide-out-to-right-2 exiting:placement-right:slide-out-to-left-2 exiting:placement-top:slide-out-to-bottom-2 exiting:placement-bottom:slide-out-to-top-2",
-  ],
-  variants: {
-    isPicker: {
-      true: "max-h-72 min-w-(--trigger-width) max-w-(--trigger-width) overflow-y-auto p-1",
-    },
-  },
-})
-
-const Dialog = ({ className, ...props }: RACDialogProps) => (
-  <RACDialog
-    slot="dialog"
-    aria-label="Dialog"
-    className={cn(
-      "relative flex max-h-[calc(var(--visual-viewport-height)-var(--visual-viewport-vertical-padding))] flex-col overflow-hidden outline-hidden",
-      className,
-    )}
-    {...props}
-  />
-)
+const Dialog = (props: DialogTriggerProps) => <RACDialogTrigger {...props} />
 
 const DialogOverlay = ({ className, isDismissable = true, ...props }: ModalOverlayProps) => (
-  <RACModalOverlay
-    isDismissable={isDismissable}
-    isKeyboardDismissDisabled={!isDismissable}
-    className={composeRenderProps(className, (className) => overlayStyle({ className }))}
-    {...props}
-  />
+    <RACModalOverlay
+        className={composeRenderProps(className, (className) =>
+            cn(
+                'fixed inset-0 isolate z-50 bg-black/50 [--visual-viewport-vertical-padding:32px] supports-backdrop-filter:backdrop-blur-xs',
+                'data-entering:fade-in-0 data-entering:animate-in',
+                'data-exiting:fade-out-0 data-exiting:animate-out data-exiting:duration-150',
+                className,
+            ),
+        )}
+        data-slot='overlay'
+        isDismissable={isDismissable}
+        isKeyboardDismissDisabled={!isDismissable}
+        {...props}
+    />
 )
 
-const DialogHeader = ({ className, ...props }: ComponentPropsWithRef<"div">) => {
-  return (
-    <div
-      slot="header"
-      className={cn("flex flex-col p-4 text-center sm:text-left", className)}
-      {...props}
-    />
-  )
+interface DialogContentProps
+    extends Omit<ComponentProps<typeof RACModal>, 'children' | 'isDismissable'>,
+        Omit<ModalOverlayProps, 'className' | 'children' | 'isDismissable'> {
+    'aria-label'?: DialogProps['aria-label']
+    'aria-labelledby'?: DialogProps['aria-labelledby']
+    role?: DialogProps['role']
+    closeButton?: boolean
+    children?: DialogProps['children']
+    className?: DialogProps['className']
+    overlayClassName?: ModalOverlayProps['className']
+}
+
+const DialogContent = ({
+    role = 'dialog',
+    closeButton = true,
+    className,
+    children,
+    overlayClassName,
+    ...props
+}: DialogContentProps) => {
+    const isDismissable = role !== 'alertdialog'
+    return (
+        <DialogOverlay className={overlayClassName} isDismissable={isDismissable} {...props}>
+            <RACModal
+                className={composeRenderProps(className, (className) =>
+                    cn(
+                        'fixed top-1/2 bottom-0 left-[50vw] z-50 h-fit w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-background shadow-lg transition sm:max-w-lg',
+                        'data-entering:fade-in data-entering:zoom-in-95 data-entering:slide-in-from-bottom sm:data-entering:slide-in-from-bottom-0 data-entering:animate-in data-entering:duration-200 data-entering:ease-out',
+                        'data-exiting:fade-out data-exiting:zoom-out-95 data-exiting:slide-out-to-bottom sm:data-exiting:slide-out-to-bottom-0 data-exiting:animate-out data-exiting:duration-150 data-exiting:ease-in',
+                        className,
+                    ),
+                )}
+                data-slot='modal'
+                isDismissable={isDismissable}
+                {...props}
+            >
+                <RACDialog
+                    aria-label='Dialog'
+                    className='relative flex max-h-[calc(var(--visual-viewport-height)-var(--visual-viewport-vertical-padding))] flex-col space-y-4 overflow-hidden outline-hidden has-data-[slot=body]:space-y-0'
+                    role={role}
+                    slot='dialog'
+                >
+                    {(values) => (
+                        <>
+                            {typeof children === 'function' ? children(values) : children}
+                            {closeButton && isDismissable && <DialogX />}
+                        </>
+                    )}
+                </RACDialog>
+            </RACModal>
+        </DialogOverlay>
+    )
+}
+
+const DialogHeader = ({ className, ...props }: ComponentPropsWithRef<'div'>) => {
+    return (
+        <div
+            className={cn('flex flex-col gap-2 p-6 pb-0 text-center sm:text-left', className)}
+            data-slot='header'
+            {...props}
+        />
+    )
 }
 
 const DialogTitle = ({ className, ...props }: RACHeadingProps) => (
-  <Heading slot="title" className={cn("font-semibold text-lg/8", className)} {...props} />
+    <Heading className={cn('font-semibold text-lg', className)} data-slot='title' {...props} />
 )
 
 const DialogDescription = ({ className, ...props }: TextProps) => (
-  <p slot="description" className={cn("text-muted-foreground text-sm", className)} {...props} />
-)
-
-const DialogBody = ({ className, ...props }: ComponentPropsWithRef<"div">) => (
-  <div
-    slot="body"
-    className={cn(
-      "isolate flex max-h-[calc(var(--visual-viewport-height)-var(--visual-viewport-vertical-padding))] flex-col overflow-auto px-4 py-1 will-change-scroll",
-      className,
-    )}
-    {...props}
-  />
-)
-
-const DialogFooter = ({ className, ...props }: ComponentPropsWithRef<"div">) => {
-  return (
-    <div
-      slot="footer"
-      className={cn(
-        "isolate mt-auto flex flex-col-reverse justify-center gap-2 p-4 sm:flex-row sm:justify-end",
-        className,
-      )}
-      {...props}
+    <Text
+        className={cn('text-muted-foreground text-sm', className)}
+        data-slot='description'
+        {...props}
     />
-  )
+)
+
+const DialogBody = ({ className, ...props }: ComponentPropsWithRef<'div'>) => (
+    <div
+        className={cn(
+            'isolate flex max-h-[calc(var(--visual-viewport-height)-var(--visual-viewport-vertical-padding))] flex-col overflow-auto px-6 py-4 will-change-scroll',
+            className,
+        )}
+        data-slot='body'
+        {...props}
+    />
+)
+
+const DialogFooter = ({ className, ...props }: ComponentPropsWithRef<'div'>) => {
+    return (
+        <div
+            className={cn(
+                'flex flex-col-reverse gap-2 p-6 pt-0 sm:flex-row sm:justify-end',
+                className,
+            )}
+            data-slot='footer'
+            {...props}
+        />
+    )
 }
 
 const DialogX = (props: ButtonProps) => (
-  <Button
-    slot="close"
-    aria-label="Close"
-    className="absolute top-2 right-2 inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-background pressed:bg-muted/50 text-muted-foreground outline-hidden hover:bg-muted/40 focus-visible:ring-4 focus-visible:ring-ring"
-    {...props}
-  >
-    <IconX />
-  </Button>
+    <Button
+        aria-label='Close'
+        className='absolute top-2 right-2 inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent text-muted-foreground outline-hidden hover:bg-muted/40 focus-visible:ring-4 focus-visible:ring-ring data-pressed:bg-muted/50'
+        slot='close'
+        {...props}
+    >
+        <IconX size={16} />
+    </Button>
 )
 
+const DialogTrigger = (props: ButtonProps) => <Button {...props} />
+
+Dialog.Trigger = DialogTrigger
+Dialog.Content = DialogContent
+Dialog.Body = DialogBody
+Dialog.Footer = DialogFooter
+Dialog.Header = DialogHeader
+Dialog.Overlay = DialogOverlay
+Dialog.Title = DialogTitle
+Dialog.Description = DialogDescription
+Dialog.X = DialogX
+
 export {
-  Dialog,
-  DialogBody,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogTitle,
-  DialogX,
-  modalStyle,
-  popoverStyle,
-  sheetStyle,
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogBody,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogOverlay,
+    DialogTitle,
+    DialogX,
 }

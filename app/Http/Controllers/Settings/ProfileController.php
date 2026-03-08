@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Response;
 
 class ProfileController extends Controller
@@ -16,14 +18,14 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        return inertia('settings/index', [
+        return inertia('settings/profile', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => $request->session()->get('status'),
         ]);
     }
 
     /**
-     * Update the user's profile settings.
+     * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
@@ -35,8 +37,25 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        flash('Your profile has been successfully updated.');
+        toast('Profile updated successfully');
 
-        return to_route('profile');
+        return to_route('profile.edit');
+    }
+
+    /**
+     * Delete the user's profile.
+     */
+    public function destroy(ProfileDeleteRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }

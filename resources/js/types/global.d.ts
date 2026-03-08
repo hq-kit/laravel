@@ -1,12 +1,24 @@
-import type { VisitOptions } from "@inertiajs/core"
-import type { route as routeFn } from "ziggy-js"
+import type { VisitOptions } from '@inertiajs/core'
+import type { Auth } from '@/types/auth'
 
-declare module "react-aria-components" {
-  interface RouterConfig {
-    routerOptions: VisitOptions
-  }
+declare module '@inertiajs/core' {
+    export interface InertiaConfig {
+        sharedPageProps: {
+            name: string
+            auth: Auth
+            toast: {
+                type: 'success' | 'error' | 'warning' | 'pending' | 'promise' | 'info'
+                message: string
+                data?: any
+            }
+            sidebarOpen: boolean
+            [key: string]: unknown
+        }
+    }
 }
 
-declare global {
-  const route: typeof routeFn
+declare module 'react-aria-components' {
+    interface RouterConfig {
+        routerOptions: VisitOptions
+    }
 }

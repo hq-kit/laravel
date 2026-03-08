@@ -1,70 +1,45 @@
-import { cn } from "@/lib/utils"
-
-import { IconLoader, IconSearch, IconX } from "@tabler/icons-react"
-import type { Ref } from "react"
+import { IconLoader2, IconSearch, IconX } from '@tabler/icons-react'
 import {
-  Button,
-  Input,
-  SearchField as RACSearchField,
-  type SearchFieldProps as RACSearchFieldProps,
-  composeRenderProps,
-} from "react-aria-components"
-import { Description, FieldError, FieldGroup, type FieldProps, Label } from "./form"
-
-interface SearchFieldProps extends RACSearchFieldProps, FieldProps {
-  isPending?: boolean
-  placeholder?: string
-  ref?: Ref<HTMLDivElement>
-}
+    composeRenderProps,
+    type InputProps,
+    SearchField as RACSearchField,
+    type SearchFieldProps,
+} from 'react-aria-components'
+import type { VariantProps } from 'tailwind-variants'
+import { cn } from '@/lib/utils'
+import { fieldVariants } from './field'
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from './input'
 
 const SearchField = ({
-  className,
-  placeholder,
-  label,
-  description,
-  errorMessage,
-  isPending,
-  ref,
-  ...props
-}: SearchFieldProps) => {
-  return (
+    className,
+    isPending = false,
+    orientation = 'vertical',
+    ...props
+}: SearchFieldProps & VariantProps<typeof fieldVariants> & { isPending?: boolean }) => (
     <RACSearchField
-      aria-label={placeholder ?? props["aria-label"] ?? "Search..."}
-      className={composeRenderProps(className, (className) =>
-        cn("group/field flex flex-col gap-y-1.5", className),
-      )}
-      ref={ref}
-      {...props}
-    >
-      {({ isEmpty }) => (
-        <>
-          {label && <Label>{label}</Label>}
-          <FieldGroup isInvalid={props.isInvalid || !!errorMessage} isDisabled={props.isDisabled}>
-            {isPending ? (
-              <IconLoader className="ml-2 size-4 shrink-0 animate-spin text-muted-foreground" />
-            ) : (
-              <IconSearch className="ml-2 size-4 shrink-0 text-muted-foreground" />
-            )}
-            <Input
-              placeholder={placeholder ?? "Search..."}
-              className="[&::-webkit-search-cancel-button]:hidden"
-            />
-            {!isEmpty && (
-              <Button
-                type="button"
-                aria-label="Clear"
-                className="mr-2 inline-flex cursor-pointer items-center justify-center rounded-md text-muted-foreground outline-offset-4"
-              >
-                <IconX aria-hidden />
-              </Button>
-            )}
-          </FieldGroup>
-          {description && <Description>{description}</Description>}
-          <FieldError>{errorMessage}</FieldError>
-        </>
-      )}
-    </RACSearchField>
-  )
-}
+        className={composeRenderProps(className, (className) =>
+            cn(fieldVariants({ orientation }), className),
+        )}
+        data-orientation={orientation}
+        data-pending={isPending}
+        data-slot='field'
+        {...props}
+    />
+)
 
-export { SearchField }
+const SearchInput = ({ className, ...props }: Omit<InputProps, 'type'>) => (
+    <InputGroup>
+        <InputGroupAddon>
+            <IconLoader2 className='in-data-[pending=true]:block hidden animate-spin' />
+            <IconSearch className='in-data-[pending=true]:hidden' />
+        </InputGroupAddon>
+        <InputGroupInput className='[&::-webkit-search-cancel-button]:hidden' {...props} />
+        <InputGroupAddon align='inline-end'>
+            <InputGroupButton className='scale-100 transition group-data-empty/field:scale-0'>
+                <IconX />
+            </InputGroupButton>
+        </InputGroupAddon>
+    </InputGroup>
+)
+
+export { SearchField, SearchInput }

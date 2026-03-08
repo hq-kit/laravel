@@ -2,23 +2,24 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Resources\AuthenticatedUserResource;
-use App\Http\Resources\AuthUserResource;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
     /**
-     * The root template that is loaded on the first page visit.
+     * The root template that's loaded on the first page visit.
+     *
+     * @see https://inertiajs.com/server-side-setup#root-template
      *
      * @var string
      */
     protected $rootView = 'app';
 
     /**
-     * Determine the current asset version.
+     * Determines the current asset version.
+     *
+     * @see https://inertiajs.com/asset-versioning
      */
     public function version(Request $request): ?string
     {
@@ -28,23 +29,28 @@ class HandleInertiaRequests extends Middleware
     /**
      * Define the props that are shared by default.
      *
+     * @see https://inertiajs.com/shared-data
+     *
      * @return array<string, mixed>
      */
     public function share(Request $request): array
     {
         return [
             ...parent::share($request),
-            'auth' => [
-                'user' => $request->user() ? AuthUserResource::make($request->user()) : null,
-            ],
-            'ziggy' => fn(): array => [
-                ...(new Ziggy)->toArray(),
-                'location' => $request->url(),
-            ],
-            'flash' => fn() => [
+            'name' => config('app.name'),
+            'auth.user' => fn () => $request->user() ? [
+                'id' => $request->user()->id,
+                'name' => $request->user()->name,
+                'email' => $request->user()->email,
+                'avatar' => $request->user()->avatar,
+                'permissions' => $request->user() ? $request->user()->getPermissionsViaRoles()->pluck('name')->mapWithKeys(fn ($permission) => [$permission => true])->all() : [],
+            ] : null,
+            'toast' => fn () => [
                 'message' => $request->session()->get('message'),
                 'type' => $request->session()->get('type') ?? 'success',
+                'data' => $request->session()->get('data'),
             ],
+            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }
 }

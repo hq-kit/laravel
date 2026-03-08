@@ -1,20 +1,32 @@
-import { cn } from "@/lib/utils"
-import { type LinkProps, Link as RACLink, composeRenderProps } from "react-aria-components"
+import {
+    composeRenderProps,
+    Link as RACLink,
+    type LinkProps as RACLinkProps,
+} from 'react-aria-components'
+import { cn } from '@/lib/utils'
 
-const Link = ({ className, ...props }: LinkProps) => {
-  return (
-    <RACLink
-      {...props}
-      className={composeRenderProps(className, (className) =>
-        cn(
-          "relative cursor-pointer rounded-lg text-sm outline-hidden transition",
-          "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-          "disabled:cursor-default disabled:opacity-50",
-          className,
-        ),
-      )}
-    />
-  )
+interface LinkProps extends RACLinkProps {
+    ref?: React.RefObject<HTMLAnchorElement>
 }
 
+const Link = ({ className, ref, ...props }: LinkProps) => {
+    return (
+        <RACLink
+            className={composeRenderProps(className, (className) =>
+                cn(
+                    [
+                        'rounded outline-0 outline-offset-2 focus-visible:outline-2 focus-visible:outline-ring',
+                        'disabled:cursor-default disabled:text-muted-foreground',
+                        'href' in props && 'cursor-pointer',
+                    ],
+                    className,
+                ),
+            )}
+            ref={ref}
+            {...props}
+        />
+    )
+}
+
+export type { LinkProps }
 export { Link }

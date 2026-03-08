@@ -1,59 +1,67 @@
-import { Head, useForm } from "@inertiajs/react"
-import type { FormEventHandler } from "react"
-
-import { Form, Link, TextField } from "@/components/ui"
-import { Button } from "@/components/ui/button"
-import AuthLayout from "@/layouts/auth-layout"
+// Components
+import { Form, Head } from '@inertiajs/react'
+import TextLink from '@/components/text-link'
+import { Button } from '@/components/ui/button'
+import { FieldError, FieldLabel, FieldSet } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Spinner } from '@/components/ui/spinner'
+import { TextField } from '@/components/ui/text-field'
+import AuthLayout from '@/layouts/auth-layout'
+import { login } from '@/wayfinder/routes'
+import password from '@/wayfinder/routes/password'
 
 export default function ForgotPassword({ status }: { status?: string }) {
-  const { data, setData, post, processing, errors } = useForm<Required<{ email: string }>>({
-    email: "",
-  })
+    return (
+        <>
+            <Head title='Forgot password' />
 
-  const submit: FormEventHandler = (e) => {
-    e.preventDefault()
+            {status && (
+                <div className='mb-4 text-center font-medium text-green-600 text-sm'>{status}</div>
+            )}
 
-    post(route("password.email"))
-  }
+            <div>
+                <Form {...password.email.form()}>
+                    {({ processing, errors, invalid, clearErrors }) => (
+                        <FieldSet>
+                            <TextField
+                                id='email'
+                                name='email'
+                                autoComplete='off'
+                                isInvalid={invalid('email')}
+                                autoFocus
+                            >
+                                <FieldLabel>Email address</FieldLabel>
+                                <Input placeholder='email@example.com' />
+                                <FieldError children={errors.email} />
+                            </TextField>
 
-  return (
-    <>
-      <Head title="Forgot password" />
-
-      {status && (
-        <div className="mb-4 text-center font-medium text-emerald-500 text-sm">{status}</div>
-      )}
-
-      <Form onSubmit={submit} className="space-y-4" validationErrors={errors}>
-        <TextField
-          label="Email address"
-          name="email"
-          type="email"
-          autoComplete="off"
-          value={data.email}
-          autoFocus
-          onChange={(v) => setData("email", v)}
-          placeholder="email@example.com"
-          errorMessage={errors.email}
-        />
-
-        <Button className="w-full" isPending={processing}>
-          Email password reset link
-        </Button>
-        <div className="flex justify-center">
-          <Link className="hover:text-primary" href={route("login")}>
-            Log in
-          </Link>
-        </div>
-      </Form>
-    </>
-  )
+                            <Button
+                                className='w-full'
+                                type='submit'
+                                isPending={processing}
+                                onPress={() => clearErrors()}
+                                data-test='email-password-reset-link-button'
+                            >
+                                {processing && <Spinner />}
+                                Email password reset link
+                            </Button>
+                        </FieldSet>
+                    )}
+                </Form>
+                <div className='mt-6 space-x-1 text-center text-muted-foreground text-sm'>
+                    <span>Or, return to</span>
+                    <TextLink href={login()}>log in</TextLink>
+                </div>
+            </div>
+        </>
+    )
 }
 
 ForgotPassword.layout = (page: React.ReactNode) => (
-  <AuthLayout
-    title="Forgot password"
-    description="Enter your email to receive a password reset link"
-    children={page}
-  />
+    <AuthLayout
+        title='Forgot password'
+        description='Enter your email to receive a password reset link'
+    >
+        {page}
+    </AuthLayout>
 )

@@ -1,52 +1,54 @@
-import { Head, useForm } from "@inertiajs/react"
-import type { FormEventHandler } from "react"
-
-import { Button, Form, TextField } from "@/components/ui"
-import AuthLayout from "@/layouts/auth-layout"
+import { Form, Head } from '@inertiajs/react'
+import { Button } from '@/components/ui/button'
+import { FieldError, FieldLabel, FieldSet } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Spinner } from '@/components/ui/spinner'
+import { TextField } from '@/components/ui/text-field'
+import AuthLayout from '@/layouts/auth-layout'
+import password from '@/wayfinder/routes/password'
 
 export default function ConfirmPassword() {
-  const { data, setData, post, processing, errors, reset } = useForm<
-    Required<{ password: string }>
-  >({
-    password: "",
-  })
+    return (
+        <>
+            <Head title='Confirm password' />
 
-  const submit: FormEventHandler = (e) => {
-    e.preventDefault()
+            <Form {...password.confirm.store.form()} resetOnSuccess={['password']}>
+                {({ processing, errors, invalid, clearErrors }) => (
+                    <FieldSet>
+                        <TextField
+                            id='password'
+                            type='password'
+                            name='password'
+                            autoComplete='current-password'
+                            isInvalid={invalid('password')}
+                            autoFocus
+                        >
+                            <FieldLabel>Password</FieldLabel>
+                            <Input placeholder='Password' />
+                            <FieldError children={errors.password} />
+                        </TextField>
 
-    post(route("password.confirm"), {
-      onFinish: () => reset("password"),
-    })
-  }
-
-  return (
-    <>
-      <Head title="Confirm password" />
-
-      <Form onSubmit={submit} className="space-y-4" validationErrors={errors}>
-        <TextField
-          label="Password"
-          type="password"
-          name="password"
-          placeholder="Password"
-          autoFocus
-          value={data.password}
-          onChange={(v) => setData("password", v)}
-          errorMessage={errors.password}
-        />
-
-        <Button className="w-full" isPending={processing}>
-          Confirm password
-        </Button>
-      </Form>
-    </>
-  )
+                        <Button
+                            className='w-full'
+                            isPending={processing}
+                            onPress={() => clearErrors()}
+                            data-test='confirm-password-button'
+                        >
+                            {processing && <Spinner />}
+                            Confirm password
+                        </Button>
+                    </FieldSet>
+                )}
+            </Form>
+        </>
+    )
 }
 
 ConfirmPassword.layout = (page: React.ReactNode) => (
-  <AuthLayout
-    title="Confirm your password"
-    description="This is a secure area of the application. Please confirm your password before continuing."
-    children={page}
-  />
+    <AuthLayout
+        title='Confirm your password'
+        description='This is a secure area of the application. Please confirm your password before continuing.'
+    >
+        {page}
+    </AuthLayout>
 )

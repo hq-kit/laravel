@@ -1,35 +1,17 @@
-import { cn } from "@/lib/utils"
-import type { ReactNode } from "react"
-import type { SeparatorProps } from "react-aria-components"
-import { Separator as RACSeparator } from "react-aria-components"
+import { Separator as RACSeparator, type SeparatorProps } from 'react-aria-components'
+import { cn } from '@/lib/utils'
 
-const Separator = ({
-  className,
-  children,
-  ...props
-}: SeparatorProps & { children?: ReactNode }) => {
-  return children ? (
-    <div
-      className={cn(
-        "text-muted-foreground text-sm leading-6 before:border-border after:border-muted",
-        props.orientation === "vertical"
-          ? "mx-2 flex h-full flex-col items-center self-stretch before:mb-2 before:flex-1 before:border-l after:mt-2 after:flex-1 after:border-r"
-          : "my-2 flex h-px w-full items-center self-stretch before:mr-2 before:flex-1 before:border-t after:ml-2 after:flex-1 after:border-t",
-        className,
-      )}
-    >
-      {children}
-    </div>
-  ) : (
+const Separator = ({ className, orientation = 'horizontal', ...props }: SeparatorProps) => (
     <RACSeparator
-      {...props}
-      className={cn(
-        "shrink-0 bg-border",
-        props.orientation === "vertical" ? "h-full w-px" : "h-px w-full",
-        className,
-      )}
+        className={cn(
+            className,
+            'shrink-0 bg-muted',
+            orientation === 'horizontal' ? 'h-px w-full' : 'h-full w-px',
+        )}
+        data-slot='separator'
+        orientation={orientation}
+        {...props}
     />
-  )
-}
+)
 
 export { Separator }

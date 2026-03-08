@@ -1,106 +1,105 @@
-import { Head, useForm } from "@inertiajs/react"
-import { IconLogin } from "@tabler/icons-react"
-import type { FormEventHandler } from "react"
-import { Form, Link, TextField } from "@/components/ui"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import AuthLayout from "@/layouts/auth-layout"
+import { Form, Head } from '@inertiajs/react'
+import TextLink from '@/components/text-link'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { FieldError, FieldLabel, FieldSet } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Spinner } from '@/components/ui/spinner'
+import { TextField } from '@/components/ui/text-field'
+import AuthLayout from '@/layouts/auth-layout'
+import { register } from '@/wayfinder/routes'
+import login from '@/wayfinder/routes/login'
+import password from '@/wayfinder/routes/password'
 
-type LoginForm = {
-  email: string
-  password: string
-  remember: boolean
+type Props = {
+    status?: string
+    canResetPassword: boolean
+    canRegister: boolean
 }
 
-interface LoginProps {
-  status?: string
-  canResetPassword: boolean
-}
+export default function Login({ status, canResetPassword, canRegister }: Props) {
+    return (
+        <>
+            <Head title='Log in' />
 
-export default function Login({ status, canResetPassword }: LoginProps) {
-  const { data, setData, post, processing, errors, reset } = useForm<Required<LoginForm>>({
-    email: "",
-    password: "",
-    remember: false,
-  })
+            <Form {...login.store()} resetOnSuccess={['password']} className='flex flex-col gap-6'>
+                {({ processing, errors, invalid, clearErrors }) => (
+                    <>
+                        <FieldSet>
+                            <TextField
+                                name='email'
+                                autoFocus
+                                autoComplete='email'
+                                isInvalid={invalid('email')}
+                            >
+                                <FieldLabel>Email address</FieldLabel>
+                                <Input placeholder='email@example.com' />
+                                <FieldError children={errors.email} />
+                            </TextField>
 
-  const submit: FormEventHandler = (e) => {
-    e.preventDefault()
-    post(route("login"), {
-      onFinish: () => reset("password"),
-    })
-  }
+                            <TextField
+                                type='password'
+                                name='password'
+                                isInvalid={invalid('password')}
+                                autoComplete='current-password'
+                            >
+                                <div className='flex items-center'>
+                                    <FieldLabel>Password</FieldLabel>
+                                    {canResetPassword && (
+                                        <TextLink
+                                            href={password.request()}
+                                            className='ml-auto text-sm'
+                                            tabIndex={5}
+                                        >
+                                            Forgot password?
+                                        </TextLink>
+                                    )}
+                                </div>
+                                <Input placeholder='Password' />
+                                <FieldError children={errors.password} />
+                            </TextField>
 
-  return (
-    <>
-      <Head title="Log in" />
+                            <Checkbox isInvalid={invalid('remember')} id='remember' name='remember'>
+                                <FieldLabel>Remember me</FieldLabel>
+                                <FieldError children={errors.remember} />
+                            </Checkbox>
 
-      <Form className="flex flex-col gap-4" onSubmit={submit} validationErrors={errors}>
-        <TextField
-          label="Email address"
-          name="email"
-          type="email"
-          isRequired
-          autoFocus
-          autoComplete="email"
-          value={data.email}
-          onChange={(v) => setData("email", v)}
-          placeholder="email@example.com"
-          errorMessage={errors.email}
-        />
-        <TextField
-          label="Password"
-          name="password"
-          type="password"
-          isRequired
-          autoComplete="current-password"
-          value={data.password}
-          onChange={(v) => setData("password", v)}
-          placeholder="Password"
-          errorMessage={errors.password}
-        />
+                            <Button
+                                type='submit'
+                                className='mt-4 w-full'
+                                isPending={processing}
+                                data-test='login-button'
+                                onPress={() => clearErrors()}
+                            >
+                                {processing && <Spinner />}
+                                Log in
+                            </Button>
+                        </FieldSet>
 
-        <div className="flex items-center justify-between">
-          <Checkbox
-            label="Remember me"
-            id="remember"
-            name="remember"
-            isSelected={data.remember}
-            onChange={() => setData("remember", !data.remember)}
-          />
-          {canResetPassword && (
-            <Link
-              href={route("password.request")}
-              className="font-medium text-muted-fg text-sm/4 hover:text-primary"
-            >
-              Forgot password?
-            </Link>
-          )}
-        </div>
+                        {canRegister && (
+                            <div className='text-center text-muted-foreground text-sm'>
+                                Don't have an account?{' '}
+                                <TextLink href={register()} tabIndex={5}>
+                                    Sign up
+                                </TextLink>
+                            </div>
+                        )}
+                    </>
+                )}
+            </Form>
 
-        <Button type="submit" className="mt-4 w-full" isPending={processing}>
-          <IconLogin />
-          Log in
-        </Button>
-
-        <div className="text-center text-muted-fg text-sm">
-          Don't have an account?{" "}
-          <Link className="hover:text-fg" href={route("register")}>
-            Sign up
-          </Link>
-        </div>
-      </Form>
-      {status && (
-        <div className="mb-4 text-center font-medium text-emerald-500 text-sm">{status}</div>
-      )}
-    </>
-  )
+            {status && (
+                <div className='mb-4 text-center font-medium text-green-600 text-sm'>{status}</div>
+            )}
+        </>
+    )
 }
 
 Login.layout = (page: React.ReactNode) => (
-  <AuthLayout
-    title="Log in to your account"
-    description="Enter your email and password below to log in"
-    children={page}
-  />
+    <AuthLayout
+        title='Log in to your account'
+        description='Enter your email and password below to log in'
+    >
+        {page}
+    </AuthLayout>
 )

@@ -1,93 +1,116 @@
-import { Link, useForm, usePage } from "@inertiajs/react"
-import { IconDeviceFloppy } from "@tabler/icons-react"
-import type { FormEventHandler } from "react"
+import { Form, Head, Link, usePage } from '@inertiajs/react'
+import DeleteUser from '@/components/delete-user'
+import Heading from '@/components/heading'
+import { Button } from '@/components/ui/button'
+import { FieldError, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { TextField } from '@/components/ui/text-field'
+import AppLayout from '@/layouts/app-layout'
+import SettingsLayout from '@/layouts/settings/layout'
+import type { BreadcrumbItem } from '@/types'
+import profile from '@/wayfinder/routes/profile'
+import verification from '@/wayfinder/routes/verification'
 
-import { Card, Form, Note, TextField } from "@/components/ui"
-import { Button } from "@/components/ui/button"
-import type { SharedData } from "@/types"
-
-type ProfileForm = {
-  name: string
-  email: string
-}
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Profile settings',
+        href: profile.edit().url,
+    },
+]
 
 export default function Profile({
-  mustVerifyEmail,
-  status,
+    mustVerifyEmail,
+    status,
 }: {
-  mustVerifyEmail: boolean
-  status?: string
+    mustVerifyEmail: boolean
+    status?: string
 }) {
-  const { auth } = usePage<SharedData>().props
+    const { auth } = usePage().props
 
-  const { data, setData, patch, errors, processing } = useForm<Required<ProfileForm>>({
-    name: auth.user.name,
-    email: auth.user.email,
-  })
+    return (
+        <>
+            <Head title='Profile settings' />
 
-  const submit: FormEventHandler = (e) => {
-    e.preventDefault()
+            <h1 className='sr-only'>Profile settings</h1>
 
-    patch(route("profile"), {
-      preserveScroll: true,
-    })
-  }
+            <SettingsLayout>
+                <div className='space-y-6'>
+                    <Heading
+                        variant='small'
+                        title='Profile information'
+                        description='Update your name and email address'
+                    />
 
-  return (
-    <Card>
-      <Card.Header title="Profile information" description="Update your name and email address" />
+                    <Form
+                        {...profile.update.form()}
+                        options={{
+                            preserveScroll: true,
+                        }}
+                        className='space-y-6'
+                    >
+                        {({ processing, invalid, clearErrors, errors }) => (
+                            <>
+                                <TextField
+                                    defaultValue={auth.user.name}
+                                    name='name'
+                                    autoComplete='name'
+                                    isInvalid={invalid('name')}
+                                >
+                                    <FieldLabel>Name</FieldLabel>
+                                    <Input placeholder='Full name' />
+                                    <FieldError children={errors.name} />
+                                </TextField>
 
-      <Card.Content>
-        <Form onSubmit={submit} className="max-w-xl space-y-4" validationErrors={errors}>
-          <TextField
-            label="Name"
-            name="name"
-            isRequired
-            autoComplete="name"
-            placeholder="Full name"
-            autoFocus
-            value={data.name}
-            onChange={(v) => setData("name", v)}
-            errorMessage={errors.name}
-          />
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            value={data.email}
-            onChange={(v) => setData("email", v)}
-            isRequired
-            autoComplete="email"
-            placeholder="Email address"
-            errorMessage={errors.email}
-          />
+                                <TextField
+                                    defaultValue={auth.user.email}
+                                    name='email'
+                                    autoComplete='email'
+                                    isInvalid={invalid('email')}
+                                >
+                                    <FieldLabel>Email address</FieldLabel>
+                                    <Input placeholder='Email address' />
+                                    <FieldError children={errors.email} />
+                                </TextField>
 
-          {mustVerifyEmail && auth.user.email_verified_at === null && (
-            <div>
-              <p className="-mt-4 text-muted-foreground text-sm">
-                Your email address is unverified.
-                <Link
-                  href={route("verification.send")}
-                  method="post"
-                  as="button"
-                  className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                >
-                  Click here to resend the verification email.
-                </Link>
-              </p>
+                                {mustVerifyEmail && auth.user.email_verified_at === null && (
+                                    <div>
+                                        <p className='-mt-4 text-muted-foreground text-sm'>
+                                            Your email address is unverified.{' '}
+                                            <Link
+                                                href={verification.send()}
+                                                as='button'
+                                                className='text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500'
+                                            >
+                                                Click here to resend the verification email.
+                                            </Link>
+                                        </p>
 
-              {status === "verification-link-sent" && (
-                <Note>A new verification link has been sent to the email address</Note>
-              )}
-            </div>
-          )}
+                                        {status === 'verification-link-sent' && (
+                                            <div className='mt-2 font-medium text-green-600 text-sm'>
+                                                A new verification link has been sent to your email
+                                                address.
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
-          <Button type="submit" isPending={processing}>
-            <IconDeviceFloppy />
-            Save
-          </Button>
-        </Form>
-      </Card.Content>
-    </Card>
-  )
+                                <Button
+                                    type='submit'
+                                    onPress={() => clearErrors()}
+                                    isPending={processing}
+                                    data-test='update-profile-button'
+                                >
+                                    Save
+                                </Button>
+                            </>
+                        )}
+                    </Form>
+                </div>
+
+                <DeleteUser />
+            </SettingsLayout>
+        </>
+    )
 }
+
+Profile.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs} children={page} />

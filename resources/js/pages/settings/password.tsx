@@ -1,88 +1,111 @@
-import { useForm } from "@inertiajs/react"
-import { IconDeviceFloppy } from "@tabler/icons-react"
-import { type FormEventHandler, useRef } from "react"
-import { Card, Form, TextField } from "@/components/ui"
-import { Button } from "@/components/ui/button"
+import { Form, Head } from '@inertiajs/react'
+import { useRef } from 'react'
+import Heading from '@/components/heading'
+import { Button } from '@/components/ui/button'
+import { FieldError, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { TextField } from '@/components/ui/text-field'
+import AppLayout from '@/layouts/app-layout'
+import SettingsLayout from '@/layouts/settings/layout'
+import type { BreadcrumbItem } from '@/types'
+import userPassword from '@/wayfinder/routes/user-password'
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Password settings',
+        href: userPassword.edit(),
+    },
+]
 
 export default function Password() {
-  const passwordInput = useRef<HTMLInputElement>(null)
-  const currentPasswordInput = useRef<HTMLInputElement>(null)
+    const passwordInput = useRef<HTMLInputElement>(null)
+    const currentPasswordInput = useRef<HTMLInputElement>(null)
 
-  const { data, setData, errors, put, reset, processing } = useForm({
-    current_password: "",
-    password: "",
-    password_confirmation: "",
-  })
+    return (
+        <>
+            <Head title='Password settings' />
 
-  const updatePassword: FormEventHandler = (e) => {
-    e.preventDefault()
+            <h1 className='sr-only'>Password settings</h1>
 
-    put(route("password.update"), {
-      preserveScroll: true,
-      onSuccess: () => reset(),
-      onError: (errors) => {
-        if (errors.password) {
-          reset("password", "password_confirmation")
-          passwordInput.current?.focus()
-        }
+            <SettingsLayout>
+                <div className='space-y-6'>
+                    <Heading
+                        variant='small'
+                        title='Update password'
+                        description='Ensure your account is using a long, random password to stay secure'
+                    />
 
-        if (errors.current_password) {
-          reset("current_password")
-          currentPasswordInput.current?.focus()
-        }
-      },
-    })
-  }
+                    <Form
+                        {...userPassword.update.form()}
+                        options={{
+                            preserveScroll: true,
+                        }}
+                        resetOnError={['password', 'password_confirmation', 'current_password']}
+                        resetOnSuccess
+                        onError={(errors) => {
+                            if (errors.password) {
+                                passwordInput.current?.focus()
+                            }
 
-  return (
-    <Card>
-      <Card.Header
-        title="Update password"
-        description="Ensure your account is using a long, random password to stay secure"
-      />
+                            if (errors.current_password) {
+                                currentPasswordInput.current?.focus()
+                            }
+                        }}
+                        className='space-y-6'
+                    >
+                        {({ errors, processing, invalid, clearErrors }) => (
+                            <>
+                                <TextField
+                                    name='current_password'
+                                    type='password'
+                                    autoComplete='current-password'
+                                    isInvalid={invalid('current_password')}
+                                >
+                                    <FieldLabel>Current password</FieldLabel>
+                                    <Input
+                                        ref={currentPasswordInput}
+                                        placeholder='Current password'
+                                    />
+                                    <FieldError children={errors.current_password} />
+                                </TextField>
 
-      <Card.Content>
-        <Form onSubmit={updatePassword} className="max-w-xl space-y-4" validationErrors={errors}>
-          <TextField
-            label="Current password"
-            id="current_password"
-            ref={currentPasswordInput}
-            value={data.current_password}
-            onChange={(v) => setData("current_password", v)}
-            type="password"
-            autoComplete="current-password"
-            placeholder="Current password"
-            errorMessage={errors.current_password}
-          />
-          <TextField
-            label="New password"
-            id="password"
-            ref={passwordInput}
-            type="password"
-            autoComplete="new-password"
-            placeholder="New password"
-            value={data.password}
-            onChange={(v) => setData("password", v)}
-            errorMessage={errors.password}
-          />
+                                <TextField
+                                    name='password'
+                                    type='password'
+                                    autoComplete='new-password'
+                                    isInvalid={invalid('password')}
+                                >
+                                    <FieldLabel>New password</FieldLabel>
+                                    <Input ref={passwordInput} placeholder='New password' />
+                                    <FieldError children={errors.password} />
+                                </TextField>
 
-          <TextField
-            label="Confirm password"
-            name="password_confirmation"
-            type="password"
-            autoComplete="new-password"
-            placeholder="Confirm password"
-            value={data.password_confirmation}
-            onChange={(v) => setData("password_confirmation", v)}
-            errorMessage={errors.password_confirmation}
-          />
+                                <TextField
+                                    name='password_confirmation'
+                                    type='password'
+                                    autoComplete='new-password'
+                                    isInvalid={invalid('password_confirmation')}
+                                >
+                                    <FieldLabel>Confirm password</FieldLabel>
+                                    <Input placeholder='Confirm password' />
+                                    <FieldError children={errors.password_confirmation} />
+                                </TextField>
 
-          <Button type="submit" isDisabled={processing} isPending={processing}>
-            <IconDeviceFloppy />
-            Save password
-          </Button>
-        </Form>
-      </Card.Content>
-    </Card>
-  )
+                                <Button
+                                    type='submit'
+                                    onPress={() => clearErrors()}
+                                    isPending={processing}
+                                    data-test='update-password-button'
+                                >
+                                    Save password
+                                </Button>
+                            </>
+                        )}
+                    </Form>
+                </div>
+            </SettingsLayout>
+        </>
+    )
 }
+
+Password.layout = (page: React.ReactNode) => <AppLayout breadcrumbs={breadcrumbs} children={page} />

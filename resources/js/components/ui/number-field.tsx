@@ -1,95 +1,54 @@
-import { useIsMobile } from "@/lib/hooks"
-import { cn } from "@/lib/utils"
-
-import { IconChevronDown, IconChevronUp, IconMinus, IconPlus } from "@tabler/icons-react"
-import type { Ref } from "react"
+import type { VariantProps } from 'tailwind-variants'
+import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import {
-  Button,
-  type ButtonProps,
-  Input,
-  NumberField as RACNumberField,
-  type NumberFieldProps as RACNumberFieldProps,
-  composeRenderProps,
-} from "react-aria-components"
-import { Description, FieldError, FieldGroup, type FieldProps, Label } from "./form"
-
-interface NumberFieldProps extends RACNumberFieldProps, FieldProps {
-  placeholder?: string
-  ref?: Ref<HTMLDivElement>
-}
+    Button,
+    composeRenderProps,
+    type InputProps,
+    type NumberFieldProps,
+    NumberField as RACNumberField,
+} from 'react-aria-components'
+import { cn } from '@/lib/utils'
+import { fieldVariants } from './field'
+import { InputGroup, InputGroupInput } from './input'
 
 const NumberField = ({
-  label,
-  placeholder,
-  description,
-  className,
-  errorMessage,
-  ref,
-  ...props
-}: NumberFieldProps) => {
-  const isMobile = useIsMobile()
-  return (
+    className,
+    orientation = 'vertical',
+    ...props
+}: NumberFieldProps & VariantProps<typeof fieldVariants>) => (
     <RACNumberField
-      className={composeRenderProps(className, (className) =>
-        cn("group/field flex flex-col gap-y-1.5", className),
-      )}
-      ref={ref}
-      {...props}
-    >
-      {label && <Label>{label}</Label>}
-      <FieldGroup
-        isInvalid={props.isInvalid || !!errorMessage}
-        isDisabled={props.isDisabled}
-        className="overflow-hidden"
-      >
-        {isMobile && (
-          <Stepper className="border-r" slot="decrement">
-            <IconMinus />
-          </Stepper>
+        className={composeRenderProps(className, (className) =>
+            cn(fieldVariants({ orientation }), className),
         )}
-        <Input className="text-center tabular-nums sm:text-left" placeholder={placeholder} />
-        {isMobile ? (
-          <Stepper className="border-s" slot="increment">
-            <IconPlus />
-          </Stepper>
-        ) : (
-          <div className="flex h-full flex-col divide-y border-s">
-            <Stepper slot="increment" className="h-5 w-7">
-              <IconChevronUp />
-            </Stepper>
-            <Stepper slot="decrement" className="h-5 w-7">
-              <IconChevronDown />
-            </Stepper>
-          </div>
-        )}
-      </FieldGroup>
-      {description && <Description>{description}</Description>}
-      <FieldError>{errorMessage}</FieldError>
-    </RACNumberField>
-  )
-}
-
-interface StepperProps extends ButtonProps {
-  slot: "increment" | "decrement"
-  className?: string
-}
-
-const Stepper = ({ slot, className, ...props }: StepperProps) => {
-  return (
-    <Button
-      className={composeRenderProps(className, (className, { isDisabled, isPressed }) =>
-        cn(
-          "flex size-12 items-center justify-center text-muted-foreground outline-hidden",
-          isPressed &&
-            "bg-accent text-accent-foreground group-has-invalid/field:bg-destructive group-has-invalid/field:text-destructive-foreground",
-          isDisabled && "opacity-50",
-          className,
-        ),
-      )}
-      slot={slot}
-      {...props}
+        data-orientation={orientation}
+        data-slot='field'
+        {...props}
     />
-  )
-}
+)
 
-export { NumberField }
+const NumberInput = ({ className, ...props }: Omit<InputProps, 'type'>) => (
+    <InputGroup className='relative inline-flex h-9 w-full min-w-0 items-center overflow-hidden whitespace-nowrap rounded-md border border-input bg-transparent text-base shadow-xs outline-hidden transition-[color,box-shadow] data-disabled:pointer-events-none data-disabled:cursor-not-allowed data-focus-within:border-ring data-disabled:opacity-50 data-focus-within:ring-[3px] data-focus-within:ring-ring/50 data-focus-within:has-aria-invalid:border-destructive data-focus-within:has-aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:data-focus-within:has-aria-invalid:ring-destructive/40'>
+        <InputGroupInput
+            {...props}
+            className='w-full grow px-3 py-2 text-center tabular-nums outline-none selection:bg-primary selection:text-primary-foreground'
+        />
+        <div className='flex h-[calc(100%+2px)] flex-col'>
+            <Button
+                className='-me-px flex h-1/2 w-6 flex-1 items-center justify-center border border-input bg-background text-muted-foreground text-sm transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+                slot='increment'
+            >
+                <IconChevronUp className='size-3' />
+                <span className='sr-only'>Increment</span>
+            </Button>
+            <Button
+                className='-me-px -mt-px flex h-1/2 w-6 flex-1 items-center justify-center border border-input bg-background text-muted-foreground text-sm transition-[color,box-shadow] hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50'
+                slot='decrement'
+            >
+                <IconChevronDown className='size-3' />
+                <span className='sr-only'>Decrement</span>
+            </Button>
+        </div>
+    </InputGroup>
+)
+
+export { NumberField, NumberInput }

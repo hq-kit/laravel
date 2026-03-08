@@ -1,22 +1,18 @@
-import { ThemeToggle } from "@/components/theme-toggle"
-import AuthLayoutTemplate from "@/layouts/auth/card-layout"
+import AuthLayoutTemplate from '@/layouts/auth/auth-split-layout'
 
 export default function AuthLayout({
-  children,
-  title,
-  description,
-  ...props
+    children,
+    title,
+    description,
+    ...props
 }: {
-  children: React.ReactNode
-  title: string
-  description: string
+    children: React.ReactNode
+    title: string
+    description: string
 }) {
-  return (
-    <AuthLayoutTemplate title={title} description={description} {...props}>
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-      {children}
-    </AuthLayoutTemplate>
-  )
+    return (
+        <AuthLayoutTemplate title={title} description={description} {...props}>
+            {children}
+        </AuthLayoutTemplate>
+    )
 }

@@ -1,36 +1,32 @@
-import "../css/app.css"
+import { createInertiaApp } from '@inertiajs/react'
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import '../css/app.css'
+import { Providers } from '@/components/providers'
+import { initializeTheme } from '@/hooks/use-appearance'
 
-import { createInertiaApp } from "@inertiajs/react"
-import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers"
-import { createRoot, hydrateRoot } from "react-dom/client"
-import { useRoute } from "ziggy-js"
-import { Providers } from "@/components/providers"
-import { initializeTheme } from "@/lib/use-theme"
-import { Ziggy } from "@/ziggy"
-
-const appName = import.meta.env.VITE_APP_NAME || "Laravel"
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel'
 
 createInertiaApp({
-  title: (title) => (title ? `${title} / ${appName}` : appName),
-  resolve: (name) =>
-    resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob("./pages/**/*.tsx")),
-  setup({ el, App, props }) {
-    // @ts-expect-error
-    window.route = useRoute(Ziggy)
+    title: (title) => (title ? `${title} - ${appName}` : appName),
+    resolve: (name) =>
+        resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
+    setup({ el, App, props }) {
+        const root = createRoot(el)
 
-    const appElement = (
-      <Providers>
-        <App {...props} />
-      </Providers>
-    )
-    if (import.meta.env.SSR) {
-      hydrateRoot(el, appElement)
-      return
-    }
-
-    createRoot(el).render(appElement)
-  },
-  progress: false,
+        root.render(
+            <StrictMode>
+                <Providers>
+                    <App {...props} />
+                </Providers>
+            </StrictMode>,
+        )
+    },
+    progress: {
+        color: '#4B5563',
+    },
 })
 
+// This will set light / dark mode on load...
 initializeTheme()

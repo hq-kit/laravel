@@ -1,99 +1,56 @@
-import { useIsMobile } from "@/lib/hooks"
-import type { CSSProperties, ReactNode, Ref } from "react"
-import type {
-  ButtonProps,
-  DialogTriggerProps,
-  ModalOverlayProps,
-  PopoverProps,
-} from "react-aria-components"
 import {
-  Button,
-  DialogTrigger,
-  Modal,
-  OverlayArrow,
-  Popover as RACPopover,
-  composeRenderProps,
-} from "react-aria-components"
-import {
-  Dialog,
-  DialogBody,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogTitle,
-  popoverStyle,
-  sheetStyle,
-} from "./dialog"
+    Button,
+    type ButtonProps,
+    DialogTrigger,
+    type DialogTriggerProps,
+    OverlayArrow,
+    type PopoverProps,
+    Popover as RACPopover,
+} from 'react-aria-components'
+import { cn } from '@/lib/utils'
 
-const Popover = (props: DialogTriggerProps) => <DialogTrigger {...props} />
-
-interface PopoverContentProps
-  extends Omit<ModalOverlayProps, "children" | "className">,
-    Omit<PopoverProps, "children" | "className"> {
-  style?: CSSProperties
-  showArrow?: boolean
-  respectScreen?: boolean
-  isPicker?: boolean
-  children: ReactNode
-  className?: string | ((values: { defaultClassName?: string }) => string)
-  ref?: Ref<HTMLDivElement>
-}
+const Popover = (props: DialogTriggerProps) => <DialogTrigger data-slot='popover' {...props} />
 
 const PopoverContent = ({
-  showArrow = true,
-  className,
-  respectScreen = true,
-  isPicker = false,
-  children,
-  ...props
-}: PopoverContentProps) => {
-  const isMobile = useIsMobile()
-  return isMobile && respectScreen ? (
-    <DialogOverlay isDismissable {...props}>
-      <Modal
-        className={composeRenderProps(className, (className, renderProps) =>
-          sheetStyle({ ...renderProps, side: "bottom", className }),
-        )}
-        {...props}
-      >
-        <Dialog role="dialog" aria-label={props["aria-label"] ?? "Popover"}>
-          {children}
-        </Dialog>
-      </Modal>
-    </DialogOverlay>
-  ) : (
-    <RACPopover
-      className={composeRenderProps(className, (className) =>
-        popoverStyle({ isPicker, className }),
-      )}
-      {...props}
-    >
-      {showArrow && (
-        <OverlayArrow className="group">
-          <svg
-            width={12}
-            height={12}
-            viewBox="0 0 12 12"
-            className="group-placement-left:-rotate-90 block fill-popover stroke-border group-placement-bottom:rotate-180 group-placement-right:rotate-90"
-          >
-            <path d="M0 0 L6 6 L12 0" />
-          </svg>
-        </OverlayArrow>
-      )}
-      {children}
-    </RACPopover>
-  )
+    className,
+    offset = 8,
+    arrow = true,
+    ...props
+}: PopoverProps & { arrow?: boolean }) => {
+    return (
+        <RACPopover
+            className={cn(
+                'data-exiting:fade-out-0 data-entering:fade-in-0 data-exiting:zoom-out-95 data-entering:zoom-in-95 data-[placement=bottom]:slide-in-from-top-2 data-[placement=left]:slide-in-from-right-2 data-[placement=right]:slide-in-from-left-2 data-[placement=top]:slide-in-from-bottom-2 z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-hidden data-entering:animate-in data-exiting:animate-out',
+                className,
+            )}
+            data-slot='popover-content'
+            offset={offset}
+            {...props}
+        >
+            {(values) => (
+                <>
+                    {arrow && (
+                        <OverlayArrow className='group'>
+                            <svg
+                                className='block fill-popover stroke-border group-data-[placement=bottom]:rotate-180 group-data-[placement=left]:-rotate-90 group-data-[placement=right]:rotate-90'
+                                height={12}
+                                viewBox='0 0 12 12'
+                                width={12}
+                            >
+                                <path d='M0 0 L6 6 L12 0' />
+                            </svg>
+                        </OverlayArrow>
+                    )}
+                    {typeof props.children === 'function' ? props.children(values) : props.children}
+                </>
+            )}
+        </RACPopover>
+    )
 }
 
-Popover.Trigger = (props: ButtonProps) => <Button {...props} />
+const PopoverTrigger = (props: ButtonProps) => <Button {...props} />
 
+Popover.Trigger = PopoverTrigger
 Popover.Content = PopoverContent
 
-Popover.Header = DialogHeader
-Popover.Title = DialogTitle
-Popover.Description = DialogDescription
-Popover.Body = DialogBody
-Popover.Footer = DialogFooter
-
-export { Popover, PopoverContent }
+export { Popover, PopoverTrigger, PopoverContent }

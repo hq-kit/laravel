@@ -1,18 +1,23 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
     "vcs": {
         "enabled": false,
         "clientKind": "git",
         "useIgnoreFile": false
     },
     "files": {
-        "includes": ["resources/**/*.tsx"],
+        "includes": [
+            "resources/js/**/*.{tsx,ts,json}",
+            "!resources/js/actions/**/*.{tsx,ts}",
+            "!resources/js/routes/**/*.{tsx,ts}",
+            "!resources/js/wayfinder/**/*.{tsx,ts}"
+        ],
         "ignoreUnknown": false
     },
     "formatter": {
         "enabled": true,
         "indentStyle": "space",
-        "indentWidth": 2,
+        "indentWidth": 4,
         "lineWidth": 100
     },
     "linter": {
@@ -35,7 +40,12 @@
                 "noRedundantRoles": "off",
                 "noSvgWithoutTitle": "off",
                 "useValidAnchor": "off",
-                "useSemanticElements": "off"
+                "useSemanticElements": "off",
+                "noPositiveTabindex": "off",
+                "useAriaPropsForRole": "off",
+                "useAriaPropsSupportedByRole": "off",
+                "useFocusableInteractive": "off",
+                "useKeyWithClickEvents": "off"
             },
             "correctness": {
                 "noUnusedImports": { "level": "error", "fix": "safe" },
@@ -46,7 +56,8 @@
             "suspicious": {
                 "noDocumentCookie": "off",
                 "noExplicitAny": "off",
-                "noArrayIndexKey": "off"
+                "noArrayIndexKey": "off",
+                "useIterableCallbackReturn": "off"
             },
             "security": {
                 "noDangerouslySetInnerHtml": "off"
@@ -57,7 +68,7 @@
                     "fix": "safe",
                     "options": {
                         "attributes": ["classList"],
-                        "functions": ["twMerge", "twJoin", "tv", "composeRenderProps", "composeTailwindRenderProps"]
+                        "functions": ["cn", "clsx", "tv", "twMerge", "twJoin"]
                     }
                 }
             }
@@ -65,14 +76,15 @@
     },
     "javascript": {
         "formatter": {
-            "quoteStyle": "double",
+            "quoteStyle": "single",
             "arrowParentheses": "always",
             "bracketSameLine": false,
             "bracketSpacing": true,
-            "jsxQuoteStyle": "double",
+            "jsxQuoteStyle": "single",
             "quoteProperties": "asNeeded",
             "semicolons": "asNeeded",
-            "trailingCommas": "all"
+            "trailingCommas": "all",
+            "indentWidth": 4
         }
     },
     "assist": {
