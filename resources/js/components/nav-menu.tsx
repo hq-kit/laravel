@@ -18,7 +18,7 @@ import { dashboard } from '@/routes'
 import type { Navigations } from '@/types'
 
 export function NavMenu({
-    items = [],
+    items,
     layout = 'sidebar',
     className,
 }: {
