@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react'
+import { Form, Head, setLayoutProps } from '@inertiajs/react'
 import { IconRefresh } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,11 @@ type Props = {
     passwordRules: string
 }
 
-export default function ResetPassword({ token, email, passwordRules }: Props) {
+export default ({ token, email, passwordRules }: Props) => {
+    setLayoutProps({
+        title: 'Reset password',
+        description: 'Please enter your new password below',
+    })
     return (
         <>
             <Head title="Reset password" />
@@ -84,9 +88,4 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
             </Form>
         </>
     )
-}
-
-ResetPassword.layout = {
-    title: 'Reset password',
-    description: 'Please enter your new password below',
 }

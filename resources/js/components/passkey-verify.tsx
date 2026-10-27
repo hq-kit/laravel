@@ -1,7 +1,7 @@
 import type { UrlMethodPair } from '@inertiajs/core'
 import { router } from '@inertiajs/react'
 import { usePasskeyVerify } from '@laravel/passkeys/react'
-import { KeyRound } from 'lucide-react'
+import { IconKey } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import { FieldError } from '@/components/ui/field'
@@ -50,7 +50,7 @@ export default function PasskeyVerify({
                     onPress={verify}
                     isPending={isLoading}
                 >
-                    {isLoading ? <Spinner /> : <KeyRound className="h-4 w-4" />}
+                    {isLoading ? <Spinner /> : <IconKey />}
                     {isLoading
                         ? (loadingLabel ?? 'Authenticating...')
                         : (label ?? 'Sign in with a passkey')}

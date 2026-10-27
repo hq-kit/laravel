@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react'
+import { Form, Head, setLayoutProps } from '@inertiajs/react'
 import { IconDeviceFloppy } from '@tabler/icons-react'
 import { useRef } from 'react'
 
@@ -20,10 +20,17 @@ type Props = {
 } & ManagePasskeysProps &
     ManageTwoFactorProps
 
-export default function Security(props: Props) {
+export default (props: Props) => {
     const passwordInput = useRef<HTMLInputElement>(null)
     const currentPasswordInput = useRef<HTMLInputElement>(null)
-
+    setLayoutProps({
+        breadcrumbs: [
+            {
+                title: 'Security settings',
+                href: edit(),
+            },
+        ],
+    })
     return (
         <>
             <Head title="Security settings" />
@@ -126,13 +133,4 @@ export default function Security(props: Props) {
             />
         </>
     )
-}
-
-Security.layout = {
-    breadcrumbs: [
-        {
-            title: 'Security settings',
-            href: edit(),
-        },
-    ],
 }

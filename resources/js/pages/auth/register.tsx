@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react'
+import { Form, Head, setLayoutProps } from '@inertiajs/react'
 import { IconUserPlus } from '@tabler/icons-react'
 
 import TextLink from '@/components/text-link'
@@ -10,11 +10,12 @@ import { PasswordInput, TextField } from '@/components/ui/text-field'
 import { login } from '@/routes'
 import { store } from '@/routes/register'
 
-type Props = {
-    passwordRules: string
-}
+export default ({ passwordRules }: { passwordRules: string }) => {
+    setLayoutProps({
+        title: 'Create an account',
+        description: 'Enter your details below to create your account',
+    })
 
-export default function Register({ passwordRules }: Props) {
     return (
         <>
             <Head title="Register" />
@@ -24,7 +25,7 @@ export default function Register({ passwordRules }: Props) {
                 disableWhileProcessing
                 className="flex flex-col gap-6"
             >
-                {({ processing, errors }) => (
+                {({ processing, errors, invalid, resetAndClearErrors }) => (
                     <>
                         <div className="grid gap-6">
                             <TextField
@@ -34,6 +35,7 @@ export default function Register({ passwordRules }: Props) {
                                 autoFocus
                                 autoComplete="name"
                                 name="name"
+                                isInvalid={invalid('name')}
                             >
                                 <Label>Name</Label>
                                 <Input placeholder="Full name" />
@@ -47,6 +49,7 @@ export default function Register({ passwordRules }: Props) {
                                 isRequired
                                 autoFocus
                                 autoComplete="email"
+                                isInvalid={invalid('email')}
                             >
                                 <Label>Email address</Label>
                                 <Input placeholder="email@example.com" />
@@ -57,6 +60,7 @@ export default function Register({ passwordRules }: Props) {
                                 id="password"
                                 name="password"
                                 isRequired
+                                isInvalid={invalid('password')}
                                 autoComplete="current-password"
                             >
                                 <Label>Password</Label>
@@ -71,6 +75,7 @@ export default function Register({ passwordRules }: Props) {
                                 id="password_confirmation"
                                 isRequired
                                 autoComplete="new-password"
+                                isInvalid={invalid('password_confirmation')}
                                 name="password_confirmation"
                             >
                                 <Label>Confirm Password</Label>
@@ -85,6 +90,7 @@ export default function Register({ passwordRules }: Props) {
 
                             <Button
                                 isPending={processing}
+                                onPress={() => resetAndClearErrors()}
                                 type="submit"
                                 className="mt-2 w-full"
                                 data-test="register-user-button"
@@ -105,9 +111,4 @@ export default function Register({ passwordRules }: Props) {
             </Form>
         </>
     )
-}
-
-Register.layout = {
-    title: 'Create an account',
-    description: 'Enter your details below to create your account',
 }

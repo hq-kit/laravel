@@ -1,5 +1,4 @@
-// Components
-import { Form, Head } from '@inertiajs/react'
+import { Form, Head, setLayoutProps } from '@inertiajs/react'
 import { IconSend } from '@tabler/icons-react'
 
 import TextLink from '@/components/text-link'
@@ -7,7 +6,12 @@ import { Button } from '@/components/ui/button'
 import { logout } from '@/routes'
 import { send } from '@/routes/verification'
 
-export default function VerifyEmail({ status }: { status?: string }) {
+export default ({ status }: { status?: string }) => {
+    setLayoutProps({
+        title: 'Email verification',
+        description:
+            'Please verify your email address by clicking on the link we just emailed to you.',
+    })
     return (
         <>
             <Head title="Email verification" />
@@ -38,10 +42,4 @@ export default function VerifyEmail({ status }: { status?: string }) {
             </Form>
         </>
     )
-}
-
-VerifyEmail.layout = {
-    title: 'Email verification',
-    description:
-        'Please verify your email address by clicking on the link we just emailed to you.',
 }

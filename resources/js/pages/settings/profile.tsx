@@ -1,4 +1,4 @@
-import { Form, Head, usePage } from '@inertiajs/react'
+import { Form, Head, setLayoutProps, usePage } from '@inertiajs/react'
 import { Link } from '@inertiajs/react'
 import { IconDeviceFloppy } from '@tabler/icons-react'
 
@@ -12,20 +12,23 @@ import { Input } from '@/components/ui/input'
 import { TextField } from '@/components/ui/text-field'
 import { edit } from '@/routes/profile'
 import { send } from '@/routes/verification'
-import type { Auth } from '@/types'
 
-type PageProps = {
-    auth: Auth
-}
-
-export default function Profile({
+export default ({
     mustVerifyEmail,
     status,
 }: {
     mustVerifyEmail: boolean
     status?: string
-}) {
-    const { auth } = usePage<PageProps>().props
+}) => {
+    const { auth } = usePage().props
+    setLayoutProps({
+        breadcrumbs: [
+            {
+                title: 'Profile settings',
+                href: edit(),
+            },
+        ],
+    })
 
     return (
         <>
@@ -120,13 +123,4 @@ export default function Profile({
             <DeleteUser />
         </>
     )
-}
-
-Profile.layout = {
-    breadcrumbs: [
-        {
-            title: 'Profile settings',
-            href: edit(),
-        },
-    ],
 }

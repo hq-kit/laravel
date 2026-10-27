@@ -1,5 +1,5 @@
 import { Form } from '@inertiajs/react'
-import { ShieldCheck } from 'lucide-react'
+import { IconShieldCheck } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
 
 import Heading from '@/components/heading'
@@ -92,7 +92,7 @@ export default function ManageTwoFactor(props: Props) {
                     <div>
                         {hasSetupData ? (
                             <Button onClick={() => setShowSetupModal(true)}>
-                                <ShieldCheck />
+                                <IconShieldCheck />
                                 Continue setup
                             </Button>
                         ) : (

@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react'
+import { Form, Head, setLayoutProps } from '@inertiajs/react'
 import { IconLogin } from '@tabler/icons-react'
 
 import PasskeyVerify from '@/components/passkey-verify'
@@ -18,7 +18,11 @@ type Props = {
     canResetPassword: boolean
 }
 
-export default function Login({ status, canResetPassword }: Props) {
+export default ({ status, canResetPassword }: Props) => {
+    setLayoutProps({
+        title: 'Log in to your account',
+        description: 'Enter your email and password below to log in',
+    })
     return (
         <>
             <Head title="Log in" />
@@ -102,9 +106,4 @@ export default function Login({ status, canResetPassword }: Props) {
             )}
         </>
     )
-}
-
-Login.layout = {
-    title: 'Log in to your account',
-    description: 'Enter your email and password below to log in',
 }

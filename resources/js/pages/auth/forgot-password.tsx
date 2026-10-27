@@ -1,16 +1,18 @@
-// Components
-import { Form, Head } from '@inertiajs/react'
-import { LoaderCircle } from 'lucide-react'
+import { Form, Head, setLayoutProps } from '@inertiajs/react'
 
-import InputError from '@/components/input-error'
 import TextLink from '@/components/text-link'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/field'
+import { FieldError, Label } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { TextField } from '@/components/ui/text-field'
 import { login } from '@/routes'
 import { email } from '@/routes/password'
 
-export default function ForgotPassword({ status }: { status?: string }) {
+export default ({ status }: { status?: string }) => {
+    setLayoutProps({
+        title: 'Forgot password',
+        description: 'Enter your email to receive a password reset link',
+    })
     return (
         <>
             <Head title="Forgot password" />
@@ -23,31 +25,29 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
             <div className="space-y-6">
                 <Form {...email.form()}>
-                    {({ processing, errors }) => (
+                    {({ processing, errors, invalid, resetAndClearErrors }) => (
                         <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    autoComplete="off"
-                                    autoFocus
-                                    placeholder="email@example.com"
-                                />
+                            <TextField
+                                id="email"
+                                type="email"
+                                name="email"
+                                autoComplete="off"
+                                autoFocus
+                                isInvalid={invalid('email')}
+                            >
+                                <Label>Email address</Label>
+                                <Input placeholder="email@example.com" />
 
-                                <InputError message={errors.email} />
-                            </div>
+                                <FieldError>{errors.email}</FieldError>
+                            </TextField>
 
                             <div className="my-6 flex items-center justify-start">
                                 <Button
                                     className="w-full"
-                                    disabled={processing}
+                                    onPress={() => resetAndClearErrors()}
+                                    isPending={processing}
                                     data-test="email-password-reset-link-button"
                                 >
-                                    {processing && (
-                                        <LoaderCircle className="h-4 w-4 animate-spin" />
-                                    )}
                                     Email password reset link
                                 </Button>
                             </div>
@@ -62,9 +62,4 @@ export default function ForgotPassword({ status }: { status?: string }) {
             </div>
         </>
     )
-}
-
-ForgotPassword.layout = {
-    title: 'Forgot password',
-    description: 'Enter your email to receive a password reset link',
 }
